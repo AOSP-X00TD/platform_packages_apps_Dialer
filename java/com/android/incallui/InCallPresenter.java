@@ -131,6 +131,7 @@ public class InCallPresenter implements CallList.Listener, AudioModeProvider.Aud
 
   private StatusBarNotifier statusBarNotifier;
   private ExternalCallNotifier externalCallNotifier;
+  private InCallVibrationHandler vibrationHandler;
   private InCallDndHandler dndHandler;
   private ContactInfoCache contactInfoCache;
   private Context context;
@@ -369,6 +370,9 @@ public class InCallPresenter implements CallList.Listener, AudioModeProvider.Aud
     EnrichedCallComponent.get(this.context)
         .getEnrichedCallManager()
         .registerStateChangedListener(this.statusBarNotifier);
+
+    vibrationHandler = new InCallVibrationHandler(context);
+    addListener(vibrationHandler);
 
     dndHandler = new InCallDndHandler(context);
     addListener(dndHandler);
@@ -1695,6 +1699,11 @@ public class InCallPresenter implements CallList.Listener, AudioModeProvider.Aud
         externalCallList.removeExternalCallListener(externalCallNotifier);
       }
       statusBarNotifier = null;
+
+      if (vibrationHandler != null) {
+        removeListener(vibrationHandler);
+      }
+      vibrationHandler = null;
 
       if (dndHandler != null) {
         removeListener(dndHandler);
